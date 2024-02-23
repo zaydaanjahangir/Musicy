@@ -53,11 +53,6 @@ def find_most_similar_song(new_song_features, all_song_features, metric='cosine'
     print (similarity)
     return most_similar_index
 
-    
-
-
-
-
 
 df_songs = pd.read_csv('spotify_songs.csv')
 audio_features = df_songs[['danceability', 'energy', 'loudness', 'mode', 'speechiness', 'acousticness',

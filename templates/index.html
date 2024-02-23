@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Music Rater</title>
+{% endblock %}
+
+{% block body %} 
+
+
+<div id="song-info">
+    <h2 id="song-title">{{ song.title }}</h2>
+    <p id="song-artist">{{ song.artist }}</p>
+</div>
+
+<div id="rating-input">
+    <input type="radio" name="rating" value="1"> 1 Star
+    <input type="radio" name="rating" value="2"> 2 Stars
+    <input type="radio" name="rating" value="3"> 3 Stars
+    <input type="radio" name="rating" value="4"> 4 Stars
+    <input type="radio" name="rating" value="5"> 5 Stars
+    </div>
+
+
+
+<button id="submit-rating">Submit Rating</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#submit-rating').click(function() {
+        const selectedRating = $('input[name=rating]:checked').val();
+
+        $.ajax({
+            url: '/submit_rating',
+            type: 'POST',
+            data: {'rating': selectedRating},
+            success: function(response) {
+                console.log("Server Response:", response);
+                if (response.success) {
+                    if (response.message) {  // Ratings complete
+                        alert(response.message); 
+                    } else { // Update display with the next song
+                        $('#song-title').text(response.next_song.title);
+                        $('#song-artist').text(response.next_song.artist);
+                    }
+                } else {
+                    alert('An error occurred while submitting the rating.');
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -13,7 +13,7 @@ scaler = StandardScaler() # Create a scaler object
 normalized_features = scaler.fit_transform(audio_features) 
 ratings = []
 
-NUM_RATING_SONGS = 2
+NUM_RATING_SONGS = 1
 random_indices = random.sample(range(len(df_songs)), NUM_RATING_SONGS)
 
 for index in random_indices: # Iterate through CSV rows
@@ -28,10 +28,8 @@ for index in random_indices: # Iterate through CSV rows
         rating = int(input("Enter your rating (1-10): "))
 
     features = normalized_features[index]  # Use normalized features
-    ratings.append({'features': features, 'rating': rating}) 
+    ratings.append({'track_name': track_name,'track_artist':track_artist,'features': features, 'rating': rating}) 
 
 # Create a DataFrame from the ratings data
 ratings_df = pd.DataFrame(ratings)
-ratings_df.to_csv('song_ratings.csv', index=False) 
-
-
+ratings_df.to_csv('song_ratings.csv', mode = 'a', index=False, header=False) 
