@@ -6,34 +6,39 @@
 
 {% block body %} 
 
-
-<div id="song-info">
-    <h2 id="song-title">{{ song.title }}</h2>
-    <p id="song-artist">{{ song.artist }}</p>
+<div id="start-section">
+    <button id="start-button">Click to Start</button>
 </div>
 
-<div id="rating-input">
+<div id="song-info" style="display: none;"> 
+    <h2 id="song-title"></h2>
+    <p id="song-artist"></p>
+</div>
+
+<div id="rating-input" style="display: none;">
     <input type="radio" name="rating" value="1"> 1 Star
     <input type="radio" name="rating" value="2"> 2 Stars
     <input type="radio" name="rating" value="3"> 3 Stars
     <input type="radio" name="rating" value="4"> 4 Stars
     <input type="radio" name="rating" value="5"> 5 Stars
+    <input type="hidden" id="songIdInput"> 
     </div>
-
-
 
 <button id="submit-rating">Submit Rating</button>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script>
 $(document).ready(function() {
+
     $('#submit-rating').click(function() {
+
         const selectedRating = $('input[name=rating]:checked').val();
+        const songId = $('#songIdInput').val(); // Get the song ID
 
         $.ajax({
             url: '/submit_rating',
             type: 'POST',
-            data: {'rating': selectedRating},
+            data: {'rating': selectedRating, 'songId': songId},
             success: function(response) {
                 console.log("Server Response:", response);
                 if (response.success) {
@@ -42,10 +47,30 @@ $(document).ready(function() {
                     } else { // Update display with the next song
                         $('#song-title').text(response.next_song.title);
                         $('#song-artist').text(response.next_song.artist);
+
+                        // Send the song ID of the newly displayed song with the next rating
+                        $('#songIdInput').val(response.next_song.id);  // Assuming you add this hidden input 
                     }
                 } else {
                     alert('An error occurred while submitting the rating.');
                 }
+            }
+        });
+    });
+
+    $('#start-button').click(function() {
+        $('#start-section').hide();  
+        $('#song-info').show();   
+        $('#rating-input').show(); 
+
+        // Fetch the first song
+        $.ajax({
+            url: '/get_first_song',
+            type: 'GET',  // Use 'GET' for this request
+            success: function(response) {
+                $('#song-title').text(response.title); 
+                $('#song-artist').text(response.artist);
+                $('#songIdInput').val(response.id); 
             }
         });
     });
